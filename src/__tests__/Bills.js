@@ -4,7 +4,7 @@
 
 import '@testing-library/jest-dom'
 
-import {screen, waitFor, getByRole, getByTestId} from "@testing-library/dom"
+import {getByTestId, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import NewBillUI from '../views/NewBillUI.js'
 import { bills } from "../fixtures/bills.js"
@@ -47,21 +47,13 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  describe("When clicking on the new bill button", () => {
-    test("Then redirect to the new bill page", async () => {
-      await waitFor(() => screen.getByTestId('btn-new-bill'))
-      const newBillBtn = screen.getByTestId('btn-new-bill')
-      userEvent.click(newBillBtn)
-
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.NewBill)
-
-      const formNewBill = screen.getByTestId('form-new-bill')
-      
-      expect(formNewBill).toBeInTheDocument()
-    })    
+  describe("When clicking on the eye button", () => {
+    test("Then pop-up window opens", async () => {
+      const eyeIcons = screen.getAllByTestId('icon-eye')
+      eyeIcons.forEach(eyeIcon => {
+        userEvent.click(eyeIcon)
+      })
+      expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block;')
+    })
   })
 })
