@@ -48,7 +48,7 @@ describe("Given I am connected as an employee", () => {
   })
 
   describe("When clicking on the eye button", () => {
-    test("Then pop-up window opens", async () => {
+    test("Then pop-up window will open", async () => {
       const eyeIcons = screen.getAllByTestId('icon-eye')
       eyeIcons.forEach(eyeIcon => {
         userEvent.click(eyeIcon)
