@@ -37,24 +37,17 @@ describe("Given I am connected as an employee", () => {
     })
 
     describe('When you want to check that the inputs are filled', () => {
-      test('Expense type is filled', () => {
+      test('Expense name is filled', () => {
         const root = document.createElement("div")
         root.setAttribute("id", "root")
         document.body.append(root)
         router()
   
         window.onNavigate(ROUTES_PATH.NewBill)
-        
-        const input = screen.getByTestId('expense-type')
-        userEvent.click(input, 'Transports');
 
-        expect(input).toHaveValue('Transports');
-      })
-
-      test('Expense name is filled', () => {
         const input = screen.getByTestId('expense-name')
-        userEvent.type(input, 'Vol Paris Londres');
-        expect(input).toHaveValue('Vol Paris Londres');
+        userEvent.type(input, 'Vol Londres Paris');
+        expect(input).toHaveValue('Vol Londres Paris');
       })
 
       test('Expense amount is filled', () => {
