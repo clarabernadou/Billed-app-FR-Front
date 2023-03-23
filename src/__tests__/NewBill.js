@@ -37,7 +37,7 @@ describe("Given I am connected as an employee", () => {
     })
 
     describe('When you want to check that the inputs are filled', () => {
-      test('Expense name is filled', () => {
+      test('Expense type is filled', () => {
         const root = document.createElement("div")
         root.setAttribute("id", "root")
         document.body.append(root)
@@ -45,10 +45,34 @@ describe("Given I am connected as an employee", () => {
   
         window.onNavigate(ROUTES_PATH.NewBill)
 
+        const input = screen.getByTestId('expense-type');
+        userEvent.click(input);
+
+        const option1 = screen.getByTestId('option1');
+        const option2 = screen.getByTestId('option2');
+        const option3 = screen.getByTestId('option3');
+        const option4 = screen.getByTestId('option4');
+        const option5 = screen.getByTestId('option5');
+        const option6 = screen.getByTestId('option6');
+        const option7 = screen.getByTestId('option7');
+
+        expect(option1).toBeInTheDocument();
+        expect(option2).toBeInTheDocument();
+        expect(option3).toBeInTheDocument();
+        expect(option4).toBeInTheDocument();
+        expect(option5).toBeInTheDocument();
+        expect(option6).toBeInTheDocument();
+        expect(option7).toBeInTheDocument();
+
+        userEvent.click(option1);
+        expect(input).toHaveValue('Transports');
+      })
+
+      test('Expense name is filled', () => {
         const input = screen.getByTestId('expense-name')
         userEvent.type(input, 'Vol Londres Paris');
         expect(input).toHaveValue('Vol Londres Paris');
-      })
+      })     
 
       test('Expense amount is filled', () => {
         const input = screen.getByTestId('amount')
