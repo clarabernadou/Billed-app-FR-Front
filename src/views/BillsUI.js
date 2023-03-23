@@ -7,11 +7,11 @@ import Actions from './Actions.js'
 const row = (bill) => {
   return (`
     <tr>
-      <td>${bill.type}</td>
-      <td>${bill.name}</td>
-      <td>${bill.date}</td>
-      <td>${bill.amount} €</td>
-      <td>${bill.status}</td>
+      <td data-testid="bill-type">${bill.type}</td>
+      <td data-testid="bill-name">${bill.name}</td>
+      <td data-testid="bill-date">${bill.date}</td>
+      <td data-testid="bill-amount">${bill.amount} €</td>
+      <td data-testid="bill-status">${bill.status}</td>
       <td>
         ${Actions(bill.fileUrl)}
       </td>
