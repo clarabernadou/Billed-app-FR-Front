@@ -18,7 +18,6 @@ import router from "../app/Router.js";
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
-
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
@@ -34,6 +33,7 @@ describe("Given I am connected as an employee", () => {
       expect(windowIcon).toHaveClass('active-icon')
 
     })
+
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
@@ -56,6 +56,20 @@ describe("Given I am connected as an employee", () => {
       })
       expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block;')
     })
+  })
+
+  test("Expense fields have been filled in with valid data and the page is displayed correctly", () => {
+    const type = screen.getAllByTestId('bill-type')
+    const name = screen.getAllByTestId('bill-name')
+    const date = screen.getAllByTestId('bill-date')
+    const amount = screen.getAllByTestId('bill-amount')
+    const status = screen.getAllByTestId('bill-status')
+
+    expect(type.every(element => element.value !== 'null')).toBe(true);
+    expect(name.every(element => element.value !== 'null')).toBe(true);
+    expect(date.every(element => element.value !== '1 Janv. 70')).toBe(true);
+    expect(amount.every(element => element.value !== 'null')).toBe(true);
+    expect(status.every(element => element.value !== 'undefined')).toBe(true);
   })
 
   test("fetches bills from mock API GET", async () => {
