@@ -58,6 +58,21 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
+  describe('When clicking on the "Nouvelle note de frais" button', () => {
+    test("Redirect to new bill page", async () => {
+      const newBillBtn = screen.getByTestId('btn-new-bill');
+      const handleClickNewBill = (onNavigate) => {
+        onNavigate(ROUTES_PATH['NewBill'])
+      }
+    
+      const onNavigateMock = jest.fn();
+      handleClickNewBill(onNavigateMock);
+
+      userEvent.click(newBillBtn)
+      expect(onNavigateMock).toHaveBeenCalledWith('#employee/bill/new')
+    })     
+  })
+
   test("Expense fields have been filled in with valid data and the page is displayed correctly", () => {
     const type = screen.getAllByTestId('bill-type')
     const name = screen.getAllByTestId('bill-name')
