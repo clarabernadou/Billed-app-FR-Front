@@ -3,15 +3,18 @@
  */
 
 import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/extend-expect'
 
 import {getByTestId, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import NewBillUI from '../views/NewBillUI.js'
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH} from "../constants/routes.js";
+import { ROUTES_PATH, ROUTES} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import userEvent from '@testing-library/user-event'
 import mockStore from "../__mocks__/store"
+import Logout from "../containers/Logout.js"
+import Bills from "../containers/Bills.js"
 
 import router from "../app/Router.js";
 
@@ -57,28 +60,6 @@ describe("Given I am connected as an employee", () => {
       expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block;')
     })
   })
-  
-  test("Then test the handleClickNewBill function", async () => {
-    const handleClickNewBill = (onNavigate) => {
-      onNavigate(ROUTES_PATH['NewBill'])
-    }
-    
-    const onNavigateMock = jest.fn()
-    handleClickNewBill(onNavigateMock)
-      
-    expect(onNavigateMock).toHaveBeenCalledWith('#employee/bill/new')
-  })
-  
-  test('I am disconnected', async () => {
-    const handleClick = (onNavigate) => {
-      onNavigate(ROUTES_PATH['Login'])
-    }
-    
-    const onNavigateMock = jest.fn()
-    handleClick(onNavigateMock)
-
-    expect(onNavigateMock).toHaveBeenCalledWith(ROUTES_PATH['Login'])
-    })
 
   test("Expense fields have been filled in with valid data and the page is displayed correctly", () => {
     const type = screen.getAllByTestId('bill-type')
@@ -147,6 +128,28 @@ describe("Given I am connected as an employee", () => {
       await new Promise(process.nextTick);
       const message = await screen.getByText('Erreur')
       expect(message).toBeTruthy()
+    })
+
+    test("Then test the handleClickNewBill function", async () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+
+      const bills = new Bills({ document, onNavigate, localStorage })
+      const handleClickNewBill = jest.fn(bills.handleClickNewBill)
+      
+      const addNewBill = screen.getByTestId('btn-new-bill')
+      addNewBill.addEventListener('click', handleClickNewBill)
+      userEvent.click(addNewBill)
+
+      expect(handleClickNewBill).toHaveBeenCalled()
+      expect(window.location.href).toBe('http://localhost/#employee/bill/new');
     })
   })
 })
