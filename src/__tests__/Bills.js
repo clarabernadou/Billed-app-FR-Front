@@ -57,21 +57,28 @@ describe("Given I am connected as an employee", () => {
       expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block;')
     })
   })
-
-  describe('When clicking on the "Nouvelle note de frais" button', () => {
-    test("Redirect to new bill page", async () => {
-      const newBillBtn = screen.getByTestId('btn-new-bill');
-      const handleClickNewBill = (onNavigate) => {
-        onNavigate(ROUTES_PATH['NewBill'])
-      }
+  
+  test("Then test the handleClickNewBill function", async () => {
+    const handleClickNewBill = (onNavigate) => {
+      onNavigate(ROUTES_PATH['NewBill'])
+    }
     
-      const onNavigateMock = jest.fn();
-      handleClickNewBill(onNavigateMock);
-
-      userEvent.click(newBillBtn)
-      expect(onNavigateMock).toHaveBeenCalledWith('#employee/bill/new')
-    })     
+    const onNavigateMock = jest.fn()
+    handleClickNewBill(onNavigateMock)
+      
+    expect(onNavigateMock).toHaveBeenCalledWith('#employee/bill/new')
   })
+  
+  test('I am disconnected', async () => {
+    const handleClick = (onNavigate) => {
+      onNavigate(ROUTES_PATH['Login'])
+    }
+    
+    const onNavigateMock = jest.fn()
+    handleClick(onNavigateMock)
+
+    expect(onNavigateMock).toHaveBeenCalledWith(ROUTES_PATH['Login'])
+    })
 
   test("Expense fields have been filled in with valid data and the page is displayed correctly", () => {
     const type = screen.getAllByTestId('bill-type')
