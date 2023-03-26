@@ -61,20 +61,6 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  test("Expense fields have been filled in with valid data and the page is displayed correctly", () => {
-    const type = screen.getAllByTestId('bill-type')
-    const name = screen.getAllByTestId('bill-name')
-    const date = screen.getAllByTestId('bill-date')
-    const amount = screen.getAllByTestId('bill-amount')
-    const status = screen.getAllByTestId('bill-status')
-
-    expect(type.every(element => element.value !== 'null')).toBe(true);
-    expect(name.every(element => element.value !== 'null')).toBe(true);
-    expect(date.every(element => element.value !== '1 Janv. 70')).toBe(true);
-    expect(amount.every(element => element.value !== 'null')).toBe(true);
-    expect(status.every(element => element.value !== 'undefined')).toBe(true);
-  })
-
   test("fetches bills from mock API GET", async () => {
     localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "e@e" }));
     const root = document.createElement("div")
@@ -150,6 +136,64 @@ describe("Given I am connected as an employee", () => {
 
       expect(handleClickNewBill).toHaveBeenCalled()
       expect(window.location.href).toBe('http://localhost/#employee/bill/new');
+    })
+
+    test("Then check that information is displayed correctly", async () => {
+      const displayedTypes = screen.getAllByTestId('bill-type').map(element => element.textContent)
+      const displayedNames = screen.getAllByTestId('bill-name').map(element => element.textContent)
+      const displayedDates = screen.getAllByTestId('bill-date').map(element => element.textContent)
+      const displayedAmounts = screen.getAllByTestId('bill-amount').map(element => element.textContent)
+      const displayedStatus = screen.getAllByTestId('bill-status').map(element => element.textContent)
+
+      let replaceDisplayedAmounts = []
+
+      displayedAmounts.map(amount => {
+        amount = amount.replace(/ €/g, '')
+        amount = Number(amount)
+        replaceDisplayedAmounts.push(amount)
+      })
+
+      expect(displayedTypes).toEqual(bills.map(bill => bill.type))
+      expect(displayedNames).toEqual(bills.map(bill => bill.name))
+      expect(displayedDates).toEqual(bills.map(bill => bill.date))
+      expect(replaceDisplayedAmounts).toEqual(bills.map(bill => bill.amount))
+      expect(displayedStatus).toEqual(bills.map(bill => bill.status))
+    })
+
+    test("Then check that information is displayed correctly", () => {
+      const displayedTypes = screen.getAllByTestId('bill-type').map(element => element.textContent)
+      const displayedNames = screen.getAllByTestId('bill-name').map(element => element.textContent)
+      const displayedDates = screen.getAllByTestId('bill-date').map(element => element.textContent)
+      const displayedAmounts = screen.getAllByTestId('bill-amount').map(element => element.textContent)
+      const displayedStatus = screen.getAllByTestId('bill-status').map(element => element.textContent)
+
+      expect(displayedTypes).not.toEqual('null')
+      expect(displayedNames).not.toEqual('null')
+      expect(displayedDates).not.toEqual('1 Janv. 70')
+      expect(displayedAmounts).not.toEqual('null')
+      expect(displayedStatus).not.toEqual('undefined')
+    })
+
+    test(('Then test the handleClick function'), async () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      document.body.innerHTML = BillsUI({ data: bills })
+      
+      const logout = new Logout({ document, onNavigate, localStorage })
+      const handleClick = jest.fn(logout.handleClick)
+      
+      const disco = screen.getByTestId('icon-disconnect')
+      disco.addEventListener('click', handleClick)
+      userEvent.click(disco)
+
+      await new Promise(resolve => setTimeout(resolve, 1000)) 
+      expect(handleClick).toHaveBeenCalled()
+      expect(window.location.href).toMatch('/')
     })
   })
 })
