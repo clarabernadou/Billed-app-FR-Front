@@ -50,7 +50,7 @@ describe("Given I am connected as an employee", () => {
       expect(datesSorted).toEqual(expectedDates);      
     })
   })
-
+  
   describe("When clicking on the eye button", () => {
     test("Then pop-up window will open", async () => {
       const eyeIcons = screen.getAllByTestId('icon-eye')
@@ -116,28 +116,6 @@ describe("Given I am connected as an employee", () => {
       expect(message).toBeTruthy()
     })
 
-    test("Then test the handleClickNewBill function", async () => {
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.Bills)
-
-      const bills = new Bills({ document, onNavigate, localStorage })
-      const handleClickNewBill = jest.fn(bills.handleClickNewBill)
-      
-      const addNewBill = screen.getByTestId('btn-new-bill')
-      addNewBill.addEventListener('click', handleClickNewBill)
-      userEvent.click(addNewBill)
-
-      expect(handleClickNewBill).toHaveBeenCalled()
-      expect(window.location.href).toBe('http://localhost/#employee/bill/new');
-    })
-
     test("Then check that information is displayed correctly", async () => {
       const displayedTypes = screen.getAllByTestId('bill-type').map(element => element.textContent)
       const displayedNames = screen.getAllByTestId('bill-name').map(element => element.textContent)
@@ -172,6 +150,28 @@ describe("Given I am connected as an employee", () => {
       expect(displayedDates).not.toEqual('1 Janv. 70')
       expect(displayedAmounts).not.toEqual('null')
       expect(displayedStatus).not.toEqual('undefined')
+    })
+
+    test("Then test the handleClickNewBill function", async () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+
+      const bills = new Bills({ document, onNavigate, localStorage })
+      const handleClickNewBill = jest.fn(bills.handleClickNewBill)
+      
+      const addNewBill = screen.getByTestId('btn-new-bill')
+      addNewBill.addEventListener('click', handleClickNewBill)
+      userEvent.click(addNewBill)
+
+      expect(handleClickNewBill).toHaveBeenCalled()
+      expect(window.location.href).toBe('http://localhost/#employee/bill/new');
     })
 
     test(('Then test the handleClick function'), async () => {
