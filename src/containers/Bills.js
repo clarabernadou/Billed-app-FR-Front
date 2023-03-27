@@ -55,9 +55,9 @@ export default class {
           console.log('length', bills.length)
 
           const antiChrono = (a, b) => {
-            const dateA = new Date(a);
-            const dateB = new Date(b);
-            return dateA.getTime() - dateB.getTime();
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB.getTime() - dateA.getTime();
           };
           
           return bills.sort(antiChrono)

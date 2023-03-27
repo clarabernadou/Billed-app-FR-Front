@@ -59,7 +59,7 @@ export default ({ data: bills, loading, error }) => {
         <div id="data-table">
         <table id="example" class="table table-striped" style="width:100%">
           <thead>
-              <tr>
+              <tr data-testid='bill'>
                 <th>Type</th>
                 <th>Nom</th>
                 <th>Date</th>

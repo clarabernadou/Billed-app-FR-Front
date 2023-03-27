@@ -53,10 +53,8 @@ describe("Given I am connected as an employee", () => {
   
   describe("When clicking on the eye button", () => {
     test("Then pop-up window will open", async () => {
-      const eyeIcons = screen.getAllByTestId('icon-eye')
-      eyeIcons.forEach(eyeIcon => {
-        userEvent.click(eyeIcon)
-      })
+      const eyeIcon = screen.getAllByTestId('icon-eye')[0]
+      userEvent.click(eyeIcon)
       expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block;')
     })
   })
