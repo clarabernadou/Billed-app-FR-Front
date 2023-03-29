@@ -9,14 +9,14 @@ import {getByTestId, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import NewBillUI from '../views/NewBillUI.js'
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH, ROUTES} from "../constants/routes.js";
-import {localStorageMock} from "../__mocks__/localStorage.js";
+import { ROUTES_PATH, ROUTES} from "../constants/routes.js"
+import {localStorageMock} from "../__mocks__/localStorage.js"
 import userEvent from '@testing-library/user-event'
 import mockStore from "../__mocks__/store"
 import Logout from "../containers/Logout.js"
 import Bills from "../containers/Bills.js"
 
-import router from "../app/Router.js";
+import router from "../app/Router.js"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -41,26 +41,26 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
       const antiChrono = (a, b) => {
-        const dateA = new Date(a);
-        const dateB = new Date(b);
-        return dateA.getTime() - dateB.getTime();
-      };
-      const datesSorted = [...dates].sort(antiChrono);
-      const expectedDates = dates.sort(antiChrono);
-      expect(datesSorted).toEqual(expectedDates);      
+        const dateA = new Date(a)
+        const dateB = new Date(b)
+        return dateA.getTime() - dateB.getTime()
+      }
+      const datesSorted = [...dates].sort(antiChrono)
+      const expectedDates = dates.sort(antiChrono)
+      expect(datesSorted).toEqual(expectedDates)      
     })
   })
   
   describe("When clicking on the eye button", () => {
-    test("Then pop-up window will open", async () => {
+    test("Then pop-up window will open", () => {
       const eyeIcon = screen.getAllByTestId('icon-eye')[0]
       userEvent.click(eyeIcon)
-      expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block;')
+      expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block')
     })
   })
 
   test("fetches bills from mock API GET", async () => {
-    localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "e@e" }));
+    localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "e@e" }))
     const root = document.createElement("div")
     root.setAttribute("id", "root")
     document.body.append(root)
@@ -96,7 +96,7 @@ describe("Given I am connected as an employee", () => {
           }
         }})
       window.onNavigate(ROUTES_PATH.Bills)
-      await new Promise(process.nextTick);
+      await new Promise(process.nextTick)
       const message = await screen.getByText('Erreur')
       expect(message).toBeTruthy()
     })
@@ -109,12 +109,12 @@ describe("Given I am connected as an employee", () => {
           }
         }})
       window.onNavigate(ROUTES_PATH.Bills)
-      await new Promise(process.nextTick);
+      await new Promise(process.nextTick)
       const message = await screen.getByText('Erreur')
       expect(message).toBeTruthy()
     })
 
-    test("Then check that information is displayed correctly", async () => {
+    test("Then check that information is displayed correctly", () => {
       const displayedTypes = screen.getAllByTestId('bill-type').map(element => element.textContent)
       const displayedNames = screen.getAllByTestId('bill-name').map(element => element.textContent)
       const displayedDates = screen.getAllByTestId('bill-date').map(element => element.textContent)
@@ -150,7 +150,7 @@ describe("Given I am connected as an employee", () => {
       expect(displayedStatus).not.toEqual('undefined')
     })
 
-    test("Then test the handleClickNewBill function", async () => {
+    test("Test the redirection on click of the handleClickNewBill function", () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
@@ -169,10 +169,10 @@ describe("Given I am connected as an employee", () => {
       userEvent.click(addNewBill)
 
       expect(handleClickNewBill).toHaveBeenCalled()
-      expect(window.location.href).toBe('http://localhost/#employee/bill/new');
+      expect(window.location.href).toBe('http://localhost/#employee/bill/new')
     })
 
-    test(('Then test the handleClick function'), async () => {
+    test(('Test the disconnection when the handleClick function is clicked'), async () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
