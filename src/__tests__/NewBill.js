@@ -17,38 +17,37 @@ import { bills } from "../fixtures/bills.js"
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     test("Then new bill icon in vertical layout should be highlighted", async () => {
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee'
-      }))
+      window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
 
+      // For the redirection ⬇️
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.append(root)
       router()
-
-      window.onNavigate(ROUTES_PATH.NewBill)
+      window.onNavigate(ROUTES_PATH.NewBill) // Redirection to make sure you are on the right page
       
-      await waitFor(() => screen.getByTestId('icon-mail'))
+      await waitFor(() => screen.getByTestId('icon-mail')) // Wait until the icon appears on the screen
       const mailIcon = screen.getByTestId('icon-mail')
-      expect(mailIcon).toHaveClass('active-icon')
+
+      expect(mailIcon).toHaveClass('active-icon') // Check that the icon has the class "active-icon"
     })
 
     test("Then display the form", () => {
       const formNewBill = screen.getByTestId('form-new-bill')
-      expect(formNewBill).toBeInTheDocument()
+      expect(formNewBill).toBeInTheDocument() // Check that the form appears on the page
     })
 
     describe('When you want to check that the inputs are filled', () => {
       test('Expense type is filled', () => {
+        // For the redirection ⬇️
         const root = document.createElement("div")
         root.setAttribute("id", "root")
         document.body.append(root)
         router()
-  
-        window.onNavigate(ROUTES_PATH.NewBill)
+        window.onNavigate(ROUTES_PATH.NewBill) // Redirection to make sure you are on the right page
 
         const input = screen.getByTestId('expense-type')
-        userEvent.click(input)
+        userEvent.click(input) // Reproduce a user click on the input
 
         const option1 = screen.getByTestId('option1')
         const option2 = screen.getByTestId('option2')
@@ -58,6 +57,7 @@ describe("Given I am connected as an employee", () => {
         const option6 = screen.getByTestId('option6')
         const option7 = screen.getByTestId('option7')
 
+        // Check that the options appear in the page ⬇️
         expect(option1).toBeInTheDocument()
         expect(option2).toBeInTheDocument()
         expect(option3).toBeInTheDocument()
@@ -66,10 +66,11 @@ describe("Given I am connected as an employee", () => {
         expect(option6).toBeInTheDocument()
         expect(option7).toBeInTheDocument()
 
-        userEvent.click(option1)
-        expect(input).toHaveValue('Transports')
+        userEvent.click(option1) // Reproduce a user click on option 1
+        expect(input).toHaveValue('Transports') // Check if the input returns the right value
       })
 
+      // Check that the entries are complete ⬇️
       test('Expense name is filled', () => {
         const input = screen.getByTestId('expense-name')
         userEvent.type(input, 'Vol Londres Paris')
@@ -99,47 +100,40 @@ describe("Given I am connected as an employee", () => {
         userEvent.type(input, 'This is a comment')
         expect(input).toHaveValue('This is a comment')
       })
+      // ------------------------------------------
     })
 
     test('Then send the form and redirected to the bills page', () => {
       const sendBtn = screen.getByTestId('btn-send-bill')
-      userEvent.click(sendBtn)
-      expect(window.location.href).toBe('http://localhost/#employee/bills')
+      userEvent.click(sendBtn) // Reproduce a user click on the button
+      expect(window.location.href).toBe('http://localhost/#employee/bills') // Check that the redirection has been done
     })
 
     test('Test adding a file to the handleChangeFile function', () => {
       // For newBill parameters ⬇️
       const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
       const store = {
-        bills: () => ({
-          create: jest.fn(() => Promise.resolve())
-        })
+        bills: () => ({ create: jest.fn(() => Promise.resolve()) })
       }
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
       document.body.innerHTML = NewBillUI
 
-      // Redirection to make sure you are on the right page ⬇️
-      onNavigate(ROUTES_PATH.NewBill)
+      onNavigate(ROUTES_PATH.NewBill) // Redirection to make sure you are on the right page
 
       // Retrieving handleChangeFile ⬇️
       const newBill = new NewBill({ document, onNavigate, store, localStorage})
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
 
-      // Create a test file ⬇️
-      const file = new File(['(⌐□_□)'], 'test.png', { type: 'image/png' })
-
-      // Import input ⬇️
-      const fileInput = screen.getByTestId('file')
       
-      // Add event to input ⬇️
-      fileInput.addEventListener('change', handleChangeFile)
+      const file = new File(['(⌐□_□)'], 'test.png', { type: 'image/png' }) // Create a test file
+      const fileInput = screen.getByTestId('file') // Import input
+      
+      
+      fileInput.addEventListener('change', handleChangeFile) // Add event to input
+      fireEvent.change(fileInput, { target: { files: [file] } }) // Add a test file to input
 
-      // Add a test file to input ⬇️
-      fireEvent.change(fileInput, { target: { files: [file] } })
-    
-      // Check that the function is called ⬇️
-      expect(handleChangeFile).toHaveBeenCalled()
+      expect(handleChangeFile).toHaveBeenCalled() // Check that the function is called
     })
   })
 })
