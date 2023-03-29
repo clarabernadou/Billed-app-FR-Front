@@ -17,7 +17,17 @@ export default class NewBill {
   }
   handleChangeFile = e => {
     e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`) ;
+    const file = fileInput.files[0] ;
+
+    // Check if file type is allowed
+    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+    if (!allowedExtensions.exec(file.name)) {
+      alert('Invalid file type. Please select a JPG, JPEG or PNG file.');
+      fileInput.value = '';
+      return;
+    }
+        
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
