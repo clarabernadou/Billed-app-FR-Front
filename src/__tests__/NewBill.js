@@ -4,12 +4,13 @@
 
  import '@testing-library/jest-dom'
 
-import { getByTestId, screen, waitFor } from "@testing-library/dom"
+import { getByTestId, screen, waitFor, fireEvent } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { ROUTES_PATH} from "../constants/routes.js";
 import router from "../app/Router.js";
 import userEvent from '@testing-library/user-event'
+import { handleChangeFile } from '../containers/NewBill.js';
 
 
 describe("Given I am connected as an employee", () => {
@@ -99,10 +100,31 @@ describe("Given I am connected as an employee", () => {
       })
     })
 
+    test('Create a bill with a valid file and test the input', async () => {
+      window.onNavigate(ROUTES_PATH.NewBill);
+
+      const file = new File(['(⌐□_□)'], 'test.png', { type: 'image/png' });
+      const fileInput = screen.getByTestId('file');
+      
+      console.log(handleChangeFile);
+      // const newBill = new NewBill({ document, onNavigate, localStorage });
+      // const handleChangeFile = jest.fn(newBill.handleChangeFile);
+      
+      // fileInput.addEventListener('change', handleChangeFile)
+
+      fireEvent.change(fileInput, { target: { files: [file] } })
+      // expect(handleChangeFile).toHaveBeenCalled()
+    })
+
     test('Then send the form and redirected to the bills page', () => {
       const sendBtn = screen.getByTestId('btn-send-bill')
       userEvent.click(sendBtn)
       expect(window.location.href).toBe('http://localhost/#employee/bills');
     })
+
+    
+    // test('should show an error for an invalid file type', () => {
+      
+    // })
   })
 })
