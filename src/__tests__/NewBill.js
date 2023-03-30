@@ -4,14 +4,13 @@
 
  import '@testing-library/jest-dom'
 
-import { getByTestId, screen, waitFor, fireEvent } from "@testing-library/dom"
+import { screen, waitFor, fireEvent } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { ROUTES_PATH, ROUTES } from "../constants/routes.js"
-import {localStorageMock} from "../__mocks__/localStorage.js"
+import { localStorageMock } from "../__mocks__/localStorage.js"
 import router from "../app/Router.js"
 import userEvent from '@testing-library/user-event'
-import { bills } from "../fixtures/bills.js"
 
 
 describe("Given I am connected as an employee", () => {

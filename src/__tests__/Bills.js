@@ -50,13 +50,21 @@ describe("Given I am connected as an employee", () => {
       expect(datesSorted).toEqual(expectedDates)      
     })
   })
-  
-  describe("When clicking on the eye button", () => {
-    test("Then pop-up window will open", () => {
-      const eyeIcon = screen.getAllByTestId('icon-eye')[0]
-      userEvent.click(eyeIcon)
-      expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block')
-    })
+
+  test("Testing the handleClickIconEye function with a userEvent on click", () => {
+    const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }); }
+    const store = {
+      bills: () => ({ create: jest.fn(() => Promise.resolve()) })
+    }
+    const bills = new Bills({ document, onNavigate, store, localStorage})
+    const handleClickIconEye = jest.fn(bills.handleClickIconEye);
+
+    const eyeIcon = screen.getAllByTestId('icon-eye')[0]
+
+    eyeIcon.addEventListener('click', handleClickIconEye)
+    userEvent.click(eyeIcon)
+    
+    expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block')
   })
 
   test("fetches bills from mock API GET", async () => {
@@ -170,7 +178,7 @@ describe("Given I am connected as an employee", () => {
 
       expect(handleClickNewBill).toHaveBeenCalled()
       expect(window.location.href).toBe('http://localhost/#employee/bill/new')
-    })
+    })    
 
     test(('Test the disconnection when the handleClick function is clicked'), async () => {
       const onNavigate = (pathname) => {
