@@ -11,7 +11,10 @@ import { ROUTES_PATH, ROUTES } from "../constants/routes.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import router from "../app/Router.js"
 import userEvent from '@testing-library/user-event'
-
+import { bills } from '../fixtures/bills.js'
+import BillsUI from "../views/BillsUI"
+import firebase from '../__mocks__/firebase.js'
+import mockStore from "../__mocks__/store"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -134,5 +137,33 @@ describe("Given I am connected as an employee", () => {
 
       expect(handleChangeFile).toHaveBeenCalled() // Check that the function is called
     })
+
+    test('Adds a new bill to the database / POST test', async () => {
+      const newBill = {
+				id: 'M5fRN4WU0dv15Yeqlqqe',
+				vat: '80',
+				amount: 50,
+				name: 'test integration post',
+				fileName: 'bill.png',
+				commentary: 'note de frais pour test',
+				pct: 20,
+				type: 'Transports',
+				email: 'test@post.com',
+				fileUrl: 'https://via.placeholder.com/140x140',
+				date: '2020-09-11',
+				status: 'pending',
+				commentAdmin: 'test',
+      }
+
+      const postMock = jest.fn().mockResolvedValue([...bills, newBill])
+      const mockStore = { post: postMock }
+
+      const allBills = await mockStore.post(newBill)
+
+      expect(postMock).toHaveBeenCalledTimes(1)
+      expect(postMock).toHaveBeenCalledWith(newBill)
+      
+      expect(allBills).toContainEqual(newBill)
+    })  
   })
 })

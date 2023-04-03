@@ -7,11 +7,9 @@ import '@testing-library/jest-dom/extend-expect'
 
 import {getByTestId, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
-import NewBillUI from '../views/NewBillUI.js'
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH, ROUTES} from "../constants/routes.js"
 import {localStorageMock} from "../__mocks__/localStorage.js"
-import { formatDate, formatStatus } from "../app/format.js"
 import userEvent from '@testing-library/user-event'
 import mockStore from "../__mocks__/store"
 import Logout from "../containers/Logout.js"
@@ -172,7 +170,7 @@ describe("Given I am connected as an employee", () => {
       bills.forEach(async (bill) => {
         const store = {
           bills: jest.fn().mockReturnValue({
-            list: jest.fn().mockResolvedValue([bill]) // fix: use [bill] instead of bills as a mockResolvedValue
+            list: jest.fn().mockResolvedValue([bill])
           })
         }
       
