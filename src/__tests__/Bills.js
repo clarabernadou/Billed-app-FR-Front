@@ -11,6 +11,7 @@ import NewBillUI from '../views/NewBillUI.js'
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH, ROUTES} from "../constants/routes.js"
 import {localStorageMock} from "../__mocks__/localStorage.js"
+import { formatDate, formatStatus } from "../app/format.js"
 import userEvent from '@testing-library/user-event'
 import mockStore from "../__mocks__/store"
 import Logout from "../containers/Logout.js"
@@ -49,25 +50,6 @@ describe("Given I am connected as an employee", () => {
       const expectedDates = dates.sort(antiChrono)
       expect(datesSorted).toEqual(expectedDates)      
     })
-  })
-
-  test("Testing the handleClickIconEye function with a userEvent on click", () => {
-    $.fn.modal = jest.fn()
-    const eyeIcon = screen.getAllByTestId('icon-eye')[0]
-
-    const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
-    const store = {
-      bills: () => ({ create: jest.fn(() => Promise.resolve()) })
-    }
-
-    const bills = new Bills({ document, onNavigate, store, localStorage})
-    const handleClickIconEye = jest.fn(bills.handleClickIconEye(eyeIcon))
-
-    eyeIcon.addEventListener('click', handleClickIconEye)
-    userEvent.click(eyeIcon)
-    
-    expect(handleClickIconEye).toHaveBeenCalled()
-    expect(getByTestId(document.body, 'modaleFile')).toHaveStyle('display: block')
   })
 
   test("fetches bills from mock API GET", async () => {
@@ -181,7 +163,46 @@ describe("Given I am connected as an employee", () => {
 
       expect(handleClickNewBill).toHaveBeenCalled()
       expect(window.location.href).toBe('http://localhost/#employee/bill/new')
-    })    
+    })
+
+    test("Test that the date and status format are ok", () => {
+      const dates = screen.getAllByTestId('bill-date')
+      const status = screen.getAllByTestId('bill-status')
+
+      bills.forEach(async (bill) => {
+        const store = {
+          bills: jest.fn().mockReturnValue({
+            list: jest.fn().mockResolvedValue([bill]) // fix: use [bill] instead of bills as a mockResolvedValue
+          })
+        }
+      
+        const bills = new Bills({ document, onNavigate, store, localStorage})
+        const getBills = jest.fn(bills.getBills)
+        
+        const result = await getBills.bind({ store })()
+        expect(result.date).toEqual(dates.textContent)
+        expect(result.status).toEqual(status.textContent)
+      })
+    })
+
+    test("Testing the handleClickIconEye function with a userEvent on click", () => {
+      $.fn.modal = jest.fn()
+      const eyeIcon = screen.getAllByTestId('icon-eye')[0]
+  
+      const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
+      const store = {
+        bills: () => ({ create: jest.fn(() => Promise.resolve()) })
+      }
+  
+      const bills = new Bills({ document, onNavigate, store, localStorage})
+      const handleClickIconEye = jest.fn(bills.handleClickIconEye(eyeIcon))
+  
+      eyeIcon.addEventListener('click', handleClickIconEye)
+      userEvent.click(eyeIcon)
+      
+      expect(handleClickIconEye).toHaveBeenCalled()
+      expect(getByTestId(document.body, 'modaleFile')).toHaveStyle('display: block')
+    })
 
     test(('Test the disconnection when the handleClick function is clicked'), async () => {
       const onNavigate = (pathname) => {
