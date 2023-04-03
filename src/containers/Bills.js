@@ -54,6 +54,7 @@ export default class Bills {
           })
           // console.log('length', bills.length)
 
+          // Put in chronological order by date ⬇️
           const antiChrono = (a, b) => {
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);

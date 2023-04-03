@@ -20,7 +20,7 @@ export default class NewBill {
     const fileInput = this.document.querySelector(`input[data-testid="file"]`) ;
     const file = fileInput.files[0];
 
-    // Check if file type is allowed
+    // Check if file type is allowed ⬇️
     const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i
     if (!allowedExtensions.exec(file.name)) {
       alert('Invalid file type. Please select a JPG, JPEG or PNG file.')
