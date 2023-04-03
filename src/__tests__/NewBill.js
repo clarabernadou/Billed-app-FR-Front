@@ -12,9 +12,6 @@ import { localStorageMock } from "../__mocks__/localStorage.js"
 import router from "../app/Router.js"
 import userEvent from '@testing-library/user-event'
 import { bills } from '../fixtures/bills.js'
-import BillsUI from "../views/BillsUI"
-import firebase from '../__mocks__/firebase.js'
-import mockStore from "../__mocks__/store"
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -139,6 +136,7 @@ describe("Given I am connected as an employee", () => {
     })
 
     test('Adds a new bill to the database / POST test', async () => {
+      // Creation of a new bill ⬇️
       const newBill = {
 				id: 'M5fRN4WU0dv15Yeqlqqe',
 				vat: '80',
@@ -154,16 +152,17 @@ describe("Given I am connected as an employee", () => {
 				status: 'pending',
 				commentAdmin: 'test',
       }
-
+      
+      // Creating a dummy function to simulate a POST request ⬇️
       const postMock = jest.fn().mockResolvedValue([...bills, newBill])
       const mockStore = { post: postMock }
 
-      const allBills = await mockStore.post(newBill)
+      const allBills = await mockStore.post(newBill) // Post of the new bill
 
-      expect(postMock).toHaveBeenCalledTimes(1)
-      expect(postMock).toHaveBeenCalledWith(newBill)
+      expect(postMock).toHaveBeenCalledTimes(1) // Check that postMock has been called 1 time
+      expect(postMock).toHaveBeenCalledWith(newBill) // Check that postMock has been called with the new bill
       
-      expect(allBills).toContainEqual(newBill)
+      expect(allBills).toContainEqual(newBill) // Check that allBills contains the new bill
     })  
   })
 })
