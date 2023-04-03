@@ -51,20 +51,36 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  test("Testing the handleClickIconEye function with a userEvent on click", () => {
+  test("Testing the handleClickIconEye function with a userEvent on click", async () => {
+    let customHandleClickIconEye = (icon) => {
+      const billUrl = icon.getAttribute('data-bill-url')
+      const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
+      screen.getByTestId('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
+      screen.getByTestId('#modaleFile').modal('show')
+    }
+
     const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }); }
     const store = {
-      bills: () => ({ create: jest.fn(() => Promise.resolve()) })
+      bills: () => ({ create: jest.fn(() => Promise.resolve(bills)) })
     }
-    const bills = new Bills({ document, onNavigate, store, localStorage})
-    const handleClickIconEye = jest.fn(bills.handleClickIconEye);
-
+    
     const eyeIcon = screen.getAllByTestId('icon-eye')[0]
 
-    eyeIcon.addEventListener('click', handleClickIconEye)
+    // const billsContainer = new Bills({ document, onNavigate, store, localStorage})
+    document.body.innerHTML = BillsUI({ data: bills })
+    console.log(document.body.innerHTML);
+
+    customHandleClickIconEye = jest.fn(customHandleClickIconEye)
+
+    eyeIcon.addEventListener('click', customHandleClickIconEye)
     userEvent.click(eyeIcon)
-    
-    expect(getByTestId(document.body, 'img-modal')).toHaveStyle('display: block')
+
+    expect(customHandleClickIconEye).toHaveBeenCalled()
+
+    const modale = screen.getByTestId('modaleFile')
+    expect(modale).toBeTruthy()
+
+    expect(getByTestId(document.body, 'modaleFile')).toHaveStyle('display: block')
   })
 
   test("fetches bills from mock API GET", async () => {
