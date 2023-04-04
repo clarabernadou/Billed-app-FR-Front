@@ -46,8 +46,8 @@ describe("Given I am connected as an employee", () => {
 
       // Put in chronological order by date ⬇️
       const antiChrono = (a, b) => {
-        const dateA = new Date(a)
-        const dateB = new Date(b)
+        const dateA = new Date(a.date)
+        const dateB = new Date(b.date)
         return dateA.getTime() - dateB.getTime()
       }
       const datesSorted = [...dates].sort(antiChrono)
