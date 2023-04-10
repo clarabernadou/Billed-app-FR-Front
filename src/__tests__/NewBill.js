@@ -12,6 +12,7 @@ import { localStorageMock } from "../__mocks__/localStorage.js"
 import router from "../app/Router.js"
 import userEvent from '@testing-library/user-event'
 import { bills } from '../fixtures/bills.js'
+import store from '../__mocks__/store.js'
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
@@ -116,7 +117,7 @@ describe("Given I am connected as an employee", () => {
       }
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
-      document.body.innerHTML = NewBillUI
+      document.body.innerHTML = NewBillUI()
 
       onNavigate(ROUTES_PATH.NewBill) // Redirection to make sure you are on the right page
 
@@ -134,35 +135,42 @@ describe("Given I am connected as an employee", () => {
 
       expect(handleChangeFile).toHaveBeenCalled() // Check that the function is called
     })
+    
+    test('Add new bill with mockStore / POST test', () => {
+      const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname }) }
 
-    test('Adds a new bill to the database / POST test', async () => {
-      // Creation of a new bill ⬇️
-      const newBill = {
-				id: 'M5fRN4WU0dv15Yeqlqqe',
-				vat: '80',
-				amount: 50,
-				name: 'test integration post',
-				fileName: 'bill.png',
-				commentary: 'note de frais pour test',
-				pct: 20,
-				type: 'Transports',
-				email: 'test@post.com',
-				fileUrl: 'https://via.placeholder.com/140x140',
-				date: '2020-09-11',
-				status: 'pending',
-				commentAdmin: 'test',
-      }
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
+      document.body.innerHTML = NewBillUI()
+
+      onNavigate(ROUTES_PATH.NewBill) // Redirection to make sure you are on the right page
+
+      const newBill = new NewBill({ document, onNavigate, store, localStorage})
+
+      const expenseTypeInput = screen.getByTestId('expense-type')
+      const expenseNameInput = screen.getByTestId('expense-name')
+      const dateInput =  screen.getByTestId('datepicker')
+      const amountInput = screen.getByTestId('amount')
+      const vatInput = screen.getByTestId('vat')
+      const pctInput = screen.getByTestId('pct')
+      const commentInput = screen.getByTestId('commentary')
+      const justificationInput = screen.getByTestId('file')
+
+      const file = new File(['Hello, world!'], 'test.jpg', { type: 'image/jpeg' });
+
+      const submitBtn = screen.getByTestId('btn-send-bill')
       
-      // Creating a dummy function to simulate a POST request ⬇️
-      const postMock = jest.fn().mockResolvedValue([...bills, newBill])
-      const mockStore = { post: postMock }
+      userEvent.selectOptions(expenseTypeInput, 'Fournitures de bureau');
+      userEvent.type(expenseNameInput, 'Agrafeuse');
+      userEvent.type(dateInput, '2022-03-01');
+      userEvent.type(amountInput, '9');
+      userEvent.type(vatInput, '1');
+      userEvent.type(pctInput, '2');
+      userEvent.type(commentInput, "Achat d'une nouvelle agrafeuse pour le bureau");
+      userEvent.upload(justificationInput, file);
+      userEvent.click(submitBtn)
 
-      const allBills = await mockStore.post(newBill) // Post of the new bill
-
-      expect(postMock).toHaveBeenCalledTimes(1) // Check that postMock has been called 1 time
-      expect(postMock).toHaveBeenCalledWith(newBill) // Check that postMock has been called with the new bill
-      
-      expect(allBills).toContainEqual(newBill) // Check that allBills contains the new bill
-    })  
+      expect(window.location.href).toBe('http://localhost/#employee/bills') // Check that the redirection has been done
+    })
   })
 })
