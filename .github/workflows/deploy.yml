@@ -1,0 +1,49 @@
+name: Deploy demo to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble the demo site (source files in the repository stay untouched)
+        run: |
+          mkdir site
+          cp -r index.html src site/
+          cp demo/demo-api.js site/
+          touch site/.nojekyll
+          python3 - <<'PY'
+          base = "/Billed-app-FR-Front"
+          router = "site/src/app/Router.js"
+          text = open(router, encoding="utf-8").read()
+          text = text.replace('window.location.pathname === "/"', 'window.location.pathname === "' + base + '/"')
+          text = text.replace("window.location.origin + pathname", 'window.location.origin + "' + base + '" + pathname')
+          open(router, "w", encoding="utf-8").write(text)
+          page = "site/index.html"
+          html = open(page, encoding="utf-8").read()
+          html = html.replace('<script src="src/app/datepicker.js">', '<script src="demo-api.js"></script>\n    <script src="src/app/datepicker.js">', 1)
+          open(page, "w", encoding="utf-8").write(html)
+          PY
+          test "$(grep -c 'Billed-app-FR-Front' site/src/app/Router.js)" -ge 3
+          test "$(grep -c 'demo-api.js' site/index.html)" -eq 1
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
